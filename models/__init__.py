@@ -2,11 +2,14 @@ from sqlalchemy.orm import declarative_base
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import ProgrammingError
+from config import DATABASE_URL
+import os
 
 """
 Creates a SQLAlchemy engine for connecting to the 'embeddings' database using the PostgreSQL driver and the specified connection details.
 """
-engine = create_engine('postgresql+psycopg2://postgres:summii2531@localhost:5432/embeddings', echo=False)
+DATABASE_URL = os.getenv('DATABASE_URL')
+engine = create_engine(DATABASE_URL, echo=False)
 
 # with engine.connect() as conn:
 #     conn = conn.execution_options(isolation_level="AUTOCOMMIT")
