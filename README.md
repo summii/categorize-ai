@@ -19,3 +19,6 @@ This project aims to assign categories to product information using Google taxon
 
 This will start the necessary containers, including the application and the database. The application will connect to the PostgreSQL database and handle data insertion and retrieval.
 
+## TODO
+- [ ] Add tests
+- [ ] Add a CI/CD pipeline
