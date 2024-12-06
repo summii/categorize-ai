@@ -21,6 +21,15 @@ app = FastAPI(
     version="1.0.0"
 )
 
+@app.get("/")
+async def root():
+    """Root endpoint"""
+    return {
+        "message": "Welcome to Categorize AI API",
+        "version": "1.0.0",
+        "status": "active"
+    }
+
 # --- Health check
 @app.get("/health", tags=["Health"])
 async def health_check():
