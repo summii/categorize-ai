@@ -10,5 +10,4 @@ uvicorn
 requests
 tiktoken
 openai
-dotenv
 
