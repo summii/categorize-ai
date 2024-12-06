@@ -17,7 +17,7 @@ class TaxonomyEmbeddings(BaseORM):
     @classmethod
     def put_embeddings(cls, text_data, taxonomy_type, taxonomy_source, openai_model, embedding):
         try:
-            row = cls(text_data=text_data, taxonomy_type=taxonomy_type, taxonomy_source=taxonomy_source, openai_model=openai_model, embeddings=embedding)
+            row = cls(text_data=text_data, taxonomy_type=taxonomy_type, taxonomy_source=taxonomy_source, openai_model=openai_model, embedding=embedding)
             session = Session()
             session.add(row)
             session.commit()

@@ -1,5 +1,29 @@
-version: "3.8"
 services:
+  categorize-ai:    # Your main application service
+    build: .        # Uses the Dockerfile in current directory
+    container_name: categorize-ai
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/embeddings
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "8000:8000"    # Assuming your FastAPI runs on port 8000
+    volumes:
+      - .:/categorize-ai
+    working_dir: /categorize-ai
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
   postgres:
     image: "ankane/pgvector:latest"
     container_name: embeddings
@@ -11,3 +35,42 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: embeddings
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  redis:
+    image: "redis:7-alpine"
+    container_name: redis_cache
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./docker-volumes/redis:/data
+    command: redis-server --save 60 1 --loglevel warning
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s 
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # taxonomy-loader:
+  #   build: .
+  #   container_name: taxonomy-loader
+  #   environment:
+  #     - REDIS_HOST=redis
+  #     - REDIS_PORT=6379
+  #     - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/embeddings
+  #     - OPENAI_API_KEY=${OPENAI_API_KEY}
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     redis:
+  #       condition: service_healthy
+  #   volumes:
+  #     - .:/categorize-ai
+  #   working_dir: /categorize-ai
+  #   command: python utils/load_taxonomy.py
